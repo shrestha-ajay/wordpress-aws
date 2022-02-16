@@ -1,7 +1,7 @@
 {
     "Parameters": {
         "KeyName": "General-key-1",
-        "InstanceType": "t2.small",
+        "InstanceType": "t2.micro",
         "SSHLocation": "10.0.0.0/32",
         "DBName": "wordpressdb",
         "DBUser": "localdbuser",
