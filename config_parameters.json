@@ -1,6 +1,6 @@
 {
     "Parameters": {
-        "KeyName": "spring2023",
+        "KeyName": "saidi",
         "InstanceType": "t2.small",
         "SSHLocation": "10.0.0.0/32",
         "DBName": "wordpressdb",
