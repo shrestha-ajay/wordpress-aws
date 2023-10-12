@@ -1,7 +1,7 @@
 {
     "Parameters": {
         "KeyName": "spring2023",
-        "InstanceType": "t2.small",
+        "InstanceType": "m5.medium",
         "SSHLocation": "10.0.0.0/32",
         "DBName": "wordpressdb",
         "DBUser": "localdbuser",
