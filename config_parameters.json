@@ -2,7 +2,7 @@
     "Parameters": {
         "KeyName": "spring2023",
         "InstanceType": "t2.micro",
-        "SSHLocation": "10.0.0.0/32",
+        "SSHLocation": "10.0.0.1/32",
         "DBName": "wordpressdb",
         "DBUser": "localdbuser",
         "DBPassword": "dummypassword",
