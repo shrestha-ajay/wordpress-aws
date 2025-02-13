@@ -1,0 +1,85 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: 'AWS CloudFormation Template to deploy WordPress on Amazon Linux with LAMP stack.'
+
+Resources:
+  WordPressInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro
+      ImageId: ami-085ad6ae776d8f09c
+      SecurityGroups:
+        - !Ref InstanceSecurityGroup
+      KeyName: !Ref KeyPair
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          dnf update -y
+          dnf install -y httpd mariadb105-server mariadb105 php php-mysqlnd wget unzip
+          systemctl start httpd
+          systemctl enable httpd
+          systemctl start mariadb
+          systemctl enable mariadb
+          mysql_secure_installation <<EOF
+          n
+          y
+          y
+          y
+          y
+          EOF
+          
+          mariadb -u root -e "CREATE DATABASE wordpress;"
+          mariadb -u root -e "CREATE USER 'wordpressuser'@'localhost' IDENTIFIED BY 'password';"
+          mariadb -u root -e "GRANT ALL PRIVILEGES ON wordpress.* TO 'wordpressuser'@'localhost';"
+          mariadb -u root -e "FLUSH PRIVILEGES;"
+          
+          cd /var/www/html
+          wget https://wordpress.org/latest.tar.gz
+          tar -xzf latest.tar.gz
+          cp -r wordpress/* .
+          rm -rf wordpress latest.tar.gz
+          cp wp-config-sample.php wp-config.php
+          sed -i "s/database_name_here/wordpress/" wp-config.php
+          sed -i "s/username_here/wordpressuser/" wp-config.php
+          sed -i "s/password_here/password/" wp-config.php
+          
+          chown -R apache:apache /var/www/html
+          chmod -R 755 /var/www/html
+          systemctl restart httpd
+
+  InstanceSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Enable HTTP and SSH access
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+
+  SecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Security group allowing access on port 22 and 80 from anywhere
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+
+Parameters:
+  KeyPair:
+    Description: 'Name of an existing EC2 KeyPair to allow SSH access to the instance'
+    Type: AWS::EC2::KeyPair::KeyName
+
+Outputs:
+  WebsiteURL:
+    Description: 'WordPress Website URL'
+    Value: !Sub 'http://${WordPressInstance.PublicDnsName}'
