@@ -1,5 +1,5 @@
 AWSTemplateFormatVersion: '2010-09-09'
-Description: 'AWS CloudFormation Template to deploy WordPress on Amazon Linux with LAMP stack.'
+Description: 'AWS CloudFormation Template to deploy WordPress on Amazon Linux with LAMP stack'
 
 Parameters:
   KeyName: 
